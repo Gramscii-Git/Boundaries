@@ -107,8 +107,9 @@ coverage of every dataset or territorial vintage.
 
 ### Selection and map joins
 
-Municipal catalogue entries describe individual distributions with verified
-field schemas and acquisition paths. Admission to search does not establish a
+Searchable municipal catalogue entries describe individual distributions with
+verified field schemas and acquisition paths. Other entries can remain as
+metadata without admission to search. Search qualification does not establish a
 territorial dimension or a compatible boundary set. A resource from Milano,
 Napoli, Roma, Torino or Bologna may describe points, addresses, neighbourhoods
 or non-geographic records. Its publisher's municipality does not identify the
