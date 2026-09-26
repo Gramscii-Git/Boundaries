@@ -92,7 +92,7 @@ numeric observations:
 | Where | What it holds | What it is for |
 | --- | --- | --- |
 | **This repository** | the shapes, each with its ISTAT, NUTS and ISO identifiers | drawing a table of numbers on a map |
-| [**Gramscii-IT/european-open-data-catalogue**](https://huggingface.co/datasets/Gramscii-IT/european-open-data-catalogue) on Hugging Face | discovery metadata from statistical and Italian public-finance providers; release counts and coverage belong to the snapshot manifest and quality report | finding datasets and inspecting their recorded dimensions, codes and documentation |
+| [**Gramscii-IT/european-open-data-catalogue**](https://huggingface.co/datasets/Gramscii-IT/european-open-data-catalogue) on Hugging Face | discovery metadata from statistical, Italian public-finance and municipal providers; release counts and coverage belong to the snapshot manifest and quality report | finding datasets and inspecting their recorded structures, codes and documentation |
 | [**Gramscii-IT/european-territory-boundaries**](https://huggingface.co/datasets/Gramscii-IT/european-territory-boundaries) on Hugging Face | the same versioned geometry assets and machine-readable boundary-set manifest | downloading map boundaries independently of SDG |
 | [**Gramscii-Git/open-data-catalogue**](https://github.com/Gramscii-Git/open-data-catalogue) on GitHub | catalogue release policy, validation and publication code | validating an export from the SDG harvester and publishing a verified immutable revision |
 
@@ -106,6 +106,15 @@ that dataset can colour a matching shape. These examples do not establish
 coverage of every dataset or territorial vintage.
 
 ### Selection and map joins
+
+Municipal catalogue entries describe individual distributions with verified
+field schemas and acquisition paths. Admission to search does not establish a
+territorial dimension or a compatible boundary set. A resource from Milano,
+Napoli, Roma, Torino or Bologna may describe points, addresses, neighbourhoods
+or non-geographic records. Its publisher's municipality does not identify the
+territorial level of its observations, and a GeoJSON format does not certify an
+administrative boundary. Qualify the actual identifiers, classification, vintage
+and source licence before declaring a join or adding geometry here.
 
 This repository contains geometry, not a list of available observations.
 A shape does not prove that a provider has data for a particular date,
