@@ -80,6 +80,13 @@ only when that exact codelist and vintage pass coverage checks. Unknown,
 ambiguous and outside-frame codes remain explicit; there is no provider-wide
 geometry fallback.
 
+Searchable municipal distributions in the companion catalogue have verified
+field schemas and acquisition contracts; other entries can remain metadata only.
+A municipal publisher or a GeoJSON format does not establish a territorial
+dimension or an administrative boundary.
+Qualify each resource's actual identifiers, classification, vintage and licence
+before joining its observations to one of these sets.
+
 ## Row schema
 
 Each viewer row contains:
