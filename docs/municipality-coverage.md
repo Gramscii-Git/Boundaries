@@ -38,6 +38,6 @@ The distributor's checksum file and tests verify all published bytes. Native
 shapefile tests cover removed municipalities, explicitly assigned new codes,
 duplicate identities, altered input hashes, unknown projections and incomplete
 joins. Rebuilding from the pinned official inputs reproduces the historical
-files byte for byte. Consumer source bindings remain in SDG's validated
-`server/sdg/geo/catalogue.json`; the boundary repository does not infer dataset
+files byte for byte. Consumer source bindings remain in the consuming engine's
+validated geography catalogue; the boundary repository does not infer dataset
 availability or choose a geometry from an observation year.
