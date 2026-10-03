@@ -61,5 +61,44 @@ class CivicAddressTests(unittest.TestCase):
             civic_addresses.build(downloads(self.root, rows), self.root / "build")
 
 
+    def test_the_card_takes_this_snapshot_numbers(self):
+        manifest = civic_addresses.build(downloads(self.root), self.root / "build")
+        card = civic_addresses.card((Path(__file__).resolve().parents[1] / "CIVIC_ADDRESSES_README.md").read_text(), manifest)
+        self.assertIn("Snapshot **2026-09-15**: **3** civic numbers, of which **2**", card)
+        self.assertIn("from 50.0% (Molise) to\n  100.0% (Valle d'Aosta)", card)
+        self.assertNotIn("$", card)
+
+    def test_an_update_stops_when_the_snapshot_is_already_published(self):
+        work = self.root / "work"
+        downloads(self.root)
+
+        def fetched(url, target, attempts=3):
+            target.write_bytes((self.root / target.name).read_bytes())
+
+        with (mock.patch.object(civic_addresses, "fetch", fetched),
+              mock.patch.object(civic_addresses, "published", return_value="2026-09-15"),
+              mock.patch.object(civic_addresses, "publish") as publish):
+            outcome = civic_addresses.update(work, "Gramscii-IT/italian-civic-addresses", "hf",
+                                             Path(__file__).resolve().parents[1] / "CIVIC_ADDRESSES_README.md")
+        self.assertEqual(outcome, {"snapshot": "2026-09-15", "outcome": "already-published"})
+        publish.assert_not_called()
+
+    def test_an_update_publishes_a_new_snapshot_with_its_card(self):
+        work = self.root / "work"
+        downloads(self.root)
+
+        def fetched(url, target, attempts=3):
+            target.write_bytes((self.root / target.name).read_bytes())
+
+        with (mock.patch.object(civic_addresses, "fetch", fetched),
+              mock.patch.object(civic_addresses, "published", return_value="2026-08-15"),
+              mock.patch.object(civic_addresses, "publish", return_value="a" * 40) as publish):
+            outcome = civic_addresses.update(work, "Gramscii-IT/italian-civic-addresses", "hf",
+                                             Path(__file__).resolve().parents[1] / "CIVIC_ADDRESSES_README.md")
+        self.assertEqual((outcome["outcome"], outcome["revision"], outcome["rows"]), ("published", "a" * 40, 3))
+        self.assertIn("**2026-09-15**", (work / "build/README.md").read_text())
+        publish.assert_called_once()
+
+
 if __name__ == "__main__":
     unittest.main()

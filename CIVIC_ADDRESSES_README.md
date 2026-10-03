@@ -19,8 +19,8 @@ Every civic number of Italy's national address archive, ANNCSU (Archivio
 Nazionale dei Numeri Civici delle Strade Urbane), one Parquet file per region,
 as Agenzia delle Entrate and ISTAT publish it in their regional bulk files.
 
-Snapshot **2026-09-15**: **27,415,954** civic numbers, of which **20,731,065**
-(75.6%) carry coordinates. [`manifest.json`](manifest.json) lists, per region,
+Snapshot **$snapshot**: **$rows** civic numbers, of which **$located**
+($located_share%) carry coordinates. [`manifest.json`](manifest.json) lists, per region,
 the rows, the georeferenced rows, the source URL and the sha256 of both the
 source archive and the Parquet file.
 
@@ -49,9 +49,9 @@ The columns keep ANNCSU's own names and values; only numbers are parsed.
 
 ## Coverage and caveats
 
-- Georeferenced civic numbers range by region from 20.4% (Valle d'Aosta) to
-  95.6% (Emilia-Romagna). A missing coordinate is published as null.
-- `QUOTA` is mostly empty or `0`: only 2,405,171 civic numbers have a positive
+- Georeferenced civic numbers range by region from $lowest_share% ($lowest) to
+  $highest_share% ($highest). A missing coordinate is published as null.
+- `QUOTA` is mostly empty or `0`: only $altitude_positive civic numbers have a positive
   altitude, and `0` is often a placeholder rather than a measured height.
 - `CODICE_ISTAT` is the code each municipality recorded: it includes
   pre-2026 Sardinian codes and `024129`, which the 2026 ISTAT boundaries do not
@@ -69,7 +69,8 @@ dataset (Regulation 2023/138, geospatial category). The regional bulk files are
 downloaded from
 `https://anncsu.open.agenziaentrate.gov.it/age-inspire/opendata/anncsu/getds.php`
 and the national street file is used to check the total. The source refreshes
-its bulk files monthly.
+its bulk files monthly; Gramscii checks for a new snapshot every week and
+publishes it with every file read back.
 
 Assembled by Gramscii. The build script and its tests are in
 [`Gramscii-Git/boundaries`](https://github.com/Gramscii-Git/boundaries)

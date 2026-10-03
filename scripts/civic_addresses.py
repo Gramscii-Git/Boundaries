@@ -7,6 +7,11 @@ manifest records each source's digest, rows and georeferenced share. The build
 refuses a set whose civic identifiers repeat, whose coordinates fall outside
 Italy, or whose total differs from the civic numbers the national street file
 counts.
+
+`update` does the whole cycle for a scheduler: it downloads the files, stops when
+their snapshot is the one already published, and otherwise builds, uploads to
+the Hugging Face dataset with the card filled from the manifest, and reads every
+uploaded file back at the new revision.
 """
 
 import argparse
@@ -15,8 +20,14 @@ import hashlib
 import io
 import json
 import re
+import shutil
+import subprocess
+import time
+import urllib.error
+import urllib.request
 import zipfile
 from pathlib import Path
+from string import Template
 
 import pyarrow as pa
 import pyarrow.compute as pc
@@ -88,6 +99,26 @@ def street_total(path: Path) -> int:
             return sum(int(row["TOTALE_ACCESSI"] or 0) for row in rows)
 
 
+def fetch(url: str, target: Path, attempts: int = 3) -> None:
+    """One file over HTTP/1.1 GET: the publisher's edge refuses HEAD and HTTP/2."""
+    for attempt in range(1, attempts + 1):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Gramscii-OpenData/1.0"}),
+                                        timeout=600) as response, target.open("wb") as stream:
+                shutil.copyfileobj(response, stream)
+            return
+        except OSError:
+            if attempt == attempts:
+                raise
+            time.sleep(60 * attempt)
+
+
+def download(directory: Path) -> None:
+    directory.mkdir(parents=True, exist_ok=True)
+    for name in [*(f"INDIR_{code}" for code in REGIONS), "STRAD_ITA"]:
+        fetch(SOURCE.format(name=name), directory / f"{name}.zip")
+
+
 def checked(rows: pa.Table, name: str) -> dict:
     located = pc.and_(pc.is_valid(rows["LONGITUDE"]), pc.is_valid(rows["LATITUDE"]))
     longitude, latitude = pc.filter(rows["LONGITUDE"], located), pc.filter(rows["LATITUDE"], located)
@@ -95,7 +126,8 @@ def checked(rows: pa.Table, name: str) -> dict:
                             pc.or_(pc.less(latitude, LATITUDE[0]), pc.greater(latitude, LATITUDE[1])))).as_py() or 0
     if outside:
         raise ValueError(f"{name}: {outside} civic numbers lie outside Italy's extent")
-    return {"rows": rows.num_rows, "located": pc.sum(located).as_py() or 0}
+    return {"rows": rows.num_rows, "located": pc.sum(located).as_py() or 0,
+            "altitude_positive": pc.sum(pc.greater(rows["QUOTA"], 0)).as_py() or 0}
 
 
 def build(downloads: Path, output: Path) -> dict:
@@ -123,6 +155,7 @@ def build(downloads: Path, output: Path) -> dict:
     manifest = {"schema_version": 1, "snapshot": snapshots.pop(), "licence": "CC-BY-4.0",
                 "publisher": "Agenzia delle Entrate and ISTAT (ANNCSU)", "rows": total,
                 "located": sum(region["located"] for region in regions.values()),
+                "altitude_positive": sum(region["altitude_positive"] for region in regions.values()),
                 "street_file": {"source": SOURCE.format(name="STRAD_ITA"), "sha256": digest(downloads / "STRAD_ITA.zip"),
                                 "civic_numbers": counted},
                 "regions": regions}
@@ -130,13 +163,80 @@ def build(downloads: Path, output: Path) -> dict:
     return manifest
 
 
+def card(template: str, manifest: dict) -> str:
+    """The dataset card with this snapshot's numbers."""
+    shares = {region["region"]: region["located"] / region["rows"] for region in manifest["regions"].values()}
+    lowest, highest = min(shares, key=shares.get), max(shares, key=shares.get)
+    return Template(template).substitute(
+        snapshot=manifest["snapshot"], rows=f"{manifest['rows']:,}", located=f"{manifest['located']:,}",
+        located_share=f"{100 * manifest['located'] / manifest['rows']:.1f}", altitude_positive=f"{manifest['altitude_positive']:,}",
+        lowest=lowest, lowest_share=f"{100 * shares[lowest]:.1f}", highest=highest, highest_share=f"{100 * shares[highest]:.1f}")
+
+
+def published(repository: str) -> str | None:
+    """The snapshot the dataset's main revision holds, or None when it holds none."""
+    url = f"https://huggingface.co/datasets/{repository}/resolve/main/manifest.json"
+    try:
+        with urllib.request.urlopen(url, timeout=60) as response:
+            return json.load(response)["snapshot"]
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return None
+        raise
+
+
+def publish(output: Path, repository: str, hf: str, message: str) -> str:
+    """Upload the build and read every file back at the revision the upload made; that revision."""
+    answer = subprocess.run([hf, "upload", repository, str(output), ".", "--repo-type", "dataset", "--commit-message", message],
+                            check=True, capture_output=True, text=True).stdout
+    found = re.search(r"/commit/([0-9a-f]{40})", answer)
+    if found is None:
+        raise RuntimeError(f"the upload named no commit: {answer[-400:]}")
+    revision = found.group(1)
+    for path in sorted(item for item in output.rglob("*") if item.is_file()):
+        relative = path.relative_to(output).as_posix()
+        url = f"https://huggingface.co/datasets/{repository}/resolve/{revision}/{relative}"
+        with urllib.request.urlopen(url, timeout=600) as response:
+            remote = hashlib.file_digest(response, "sha256").hexdigest()
+        if remote != digest(path):
+            raise RuntimeError(f"{relative} read back at {revision} differs from the upload")
+    return revision
+
+
+def update(work: Path, repository: str, hf: str, template: Path) -> dict:
+    """Download, and when the snapshot is new, build, publish and verify it."""
+    downloads, output = work / "downloads", work / "build"
+    download(downloads)
+    with zipfile.ZipFile(downloads / f"INDIR_{next(iter(REGIONS))}.zip") as archive:
+        year, month, day = SNAPSHOT.match(member(archive, SNAPSHOT).filename).groups()
+    snapshot = f"{year}-{month}-{day}"
+    if published(repository) == snapshot:
+        return {"snapshot": snapshot, "outcome": "already-published"}
+    shutil.rmtree(output, ignore_errors=True)
+    manifest = build(downloads, output)
+    (output / "README.md").write_text(card(template.read_text(), manifest))
+    revision = publish(output, repository, hf, f"ANNCSU snapshot {snapshot}: {manifest['rows']:,} civic numbers")
+    return {"snapshot": snapshot, "outcome": "published", "revision": revision, "rows": manifest["rows"]}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--downloads", type=Path, required=True, help="directory holding INDIR_<REGION>.zip and STRAD_ITA.zip")
-    parser.add_argument("--output", type=Path, required=True)
+    commands = parser.add_subparsers(dest="command", required=True)
+    built = commands.add_parser("build", help="build the dataset from downloaded files")
+    built.add_argument("--downloads", type=Path, required=True, help="directory holding INDIR_<REGION>.zip and STRAD_ITA.zip")
+    built.add_argument("--output", type=Path, required=True)
+    updated = commands.add_parser("update", help="download, and publish a new snapshot")
+    updated.add_argument("--work", type=Path, required=True)
+    updated.add_argument("--repository", default="Gramscii-IT/italian-civic-addresses")
+    updated.add_argument("--hf", default="hf", help="the Hugging Face CLI")
+    updated.add_argument("--card", type=Path, default=Path(__file__).resolve().parents[1] / "CIVIC_ADDRESSES_README.md")
     arguments = parser.parse_args()
-    manifest = build(arguments.downloads, arguments.output)
-    print(json.dumps({key: manifest[key] for key in ("snapshot", "rows", "located")}))
+    if arguments.command == "build":
+        manifest = build(arguments.downloads, arguments.output)
+        print(json.dumps({key: manifest[key] for key in ("snapshot", "rows", "located")}))
+    else:
+        print(json.dumps({"at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                          **update(arguments.work, arguments.repository, arguments.hf, arguments.card)}))
 
 
 if __name__ == "__main__":
