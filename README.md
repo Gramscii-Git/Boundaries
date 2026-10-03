@@ -93,8 +93,8 @@ numeric observations:
 | --- | --- | --- |
 | **This repository** | the shapes, each with its ISTAT, NUTS and ISO identifiers | drawing a table of numbers on a map |
 | [**Gramscii-IT/european-open-data-catalogue**](https://huggingface.co/datasets/Gramscii-IT/european-open-data-catalogue) on Hugging Face | discovery metadata from statistical, Italian public-finance and municipal providers; release counts and coverage belong to the snapshot manifest and quality report | finding datasets and inspecting their recorded structures, codes and documentation |
-| [**Gramscii-IT/european-territory-boundaries**](https://huggingface.co/datasets/Gramscii-IT/european-territory-boundaries) on Hugging Face | the same versioned geometry assets and machine-readable boundary-set manifest | downloading map boundaries independently of SDG |
-| [**Gramscii-Git/open-data-catalogue**](https://github.com/Gramscii-Git/open-data-catalogue) on GitHub | catalogue release policy, validation and publication code | validating an export from the SDG harvester and publishing a verified immutable revision |
+| [**Gramscii-IT/european-territory-boundaries**](https://huggingface.co/datasets/Gramscii-IT/european-territory-boundaries) on Hugging Face | the same versioned geometry assets and machine-readable boundary-set manifest | downloading map boundaries on their own |
+| [**Gramscii-Git/open-data-catalogue**](https://github.com/Gramscii-Git/open-data-catalogue) on GitHub | catalogue release policy, validation and publication code | validating an export from Gramscii's harvester and publishing a verified immutable revision |
 
 A dataset in the catalogue is cut by a territorial dimension whose codes
 are aliases of the shapes here: ISTAT's `REF_AREA` code `ITE4` is Lazio
@@ -340,8 +340,8 @@ commercial-use status, shape count and artifact digest. A catalogue provider is
 bound to one of these sets only after its exact territorial codelist and vintage
 are qualified; a provider-wide wildcard is not evidence of compatibility.
 
-These files are the map layer of Semantic Deterministic Graph,
-Gramscii's deterministic answer engine, and are published here on their
-own so that anyone drawing Italian or European statistics can use them.
-The copies inside that project and the files here are byte-identical:
+These files are the map layer of Gramscii's deterministic answer engine,
+and are published here on their own so that anyone drawing Italian or
+European statistics can use them.
+The copies inside that engine and the files here are byte-identical:
 the digests above are the proof.

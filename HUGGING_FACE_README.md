@@ -26,7 +26,7 @@ configs:
 # European Territory Boundaries
 
 Versioned, ready-to-draw administrative and statistical boundaries used by
-Semantic Deterministic Graph. The release contains 12 boundary sets and 33,852
+Gramscii's maps. The release contains 12 boundary sets and 33,852
 shapes. Every shape has provider-facing identifiers and an SVG path in the
 declared view box.
 
@@ -75,7 +75,7 @@ observation for a given territory, period or filter combination.
 
 The companion
 [`Gramscii-IT/european-open-data-catalogue`](https://huggingface.co/datasets/Gramscii-IT/european-open-data-catalogue)
-qualifies provider codelists separately. SDG binds a provider dataset to a map
+qualifies provider codelists separately. Gramscii binds a provider dataset to a map
 only when that exact codelist and vintage pass coverage checks. Unknown,
 ambiguous and outside-frame codes remain explicit; there is no provider-wide
 geometry fallback.
