@@ -21,6 +21,10 @@ configs:
   data_files:
   - split: train
     path: data/gisco-nuts-non-commercial.jsonl.gz
+- config_name: istat-census-sections-2021
+  data_files:
+  - split: train
+    path: census-sections-2021/*.parquet
 ---
 
 # European Territory Boundaries
@@ -56,6 +60,9 @@ assets, one colour per shape.
 - `natural-earth` contains country and separately coded territory map units.
   Natural Earth's source data is in the public domain; Gramscii's adaptation is
   CC BY 4.0.
+- `istat-census-sections-2021` contains ISTAT's 2021 census sections as
+  GeoParquet, described below. ISTAT permits commercial use under CC BY 4.0
+  with attribution.
 - `gisco-nuts-non-commercial` contains NUTS 2024 levels 1–3. Eurostat GISCO's
   source terms limit these files to non-commercial use and require the stated
   attribution. Commercial use requires a licence from EuroGeographics.
@@ -99,6 +106,37 @@ Each viewer row contains:
 
 The geometry is simplified for screen rendering. It is not suitable for legal
 boundaries, cadastral work, distance measurement or area measurement.
+
+## Census sections 2021
+
+`census-sections-2021/` holds ISTAT's
+[Basi territoriali 2021](https://www.istat.it/notizia/basi-territoriali-e-variabili-censuarie/):
+756,376 census sections, one GeoParquet file per region (`R01.parquet` for
+Piemonte to `R20.parquet` for Sardegna, ISTAT's region codes). Unlike the sets
+above, these are full-resolution polygons for GIS use, not simplified SVG paths.
+
+- Geometry is WKB in longitude and latitude (OGC:CRS84), reprojected from
+  ISTAT's WGS84 UTM zone 32N and rounded to 7 decimals (about 1 cm). ISTAT's
+  polygons are kept as published: 1,637 of them are not valid OGC geometries.
+- Codes are text at their fixed widths: `PRO_COM` 6 digits, `SEZ21_ID` 13
+  (`PRO_COM` followed by the 7-digit `SEZ21`), `LOC21_ID` 11, `COM_ASC1`–`3`
+  9. Optional codes that ISTAT writes as 0 (`COD_ZIC`, `COD_ISAM`, `COD_ACQUE`,
+  `COD_ISOLE`, `COD_MONT_D`, `COD_AREA_S`, `COM_ASC1`–`3`) are null.
+- `POP21`, `FAM21`, `ABI21` and `EDI21` are the 2021 census counts of
+  residents, households, dwellings and buildings: 59,030,133 residents in all,
+  and 305,076 sections with none.
+- `COD_TIPO_S` is the section type; `SHAPE_Leng` and `SHAPE_Area` are ISTAT's
+  perimeter and area in metres, measured in UTM.
+- 7,911 sections are fictitious, as ISTAT defines them: 8888885–8888888 hold
+  people with no fixed abode (type 100), drawn near the town hall;
+  9999998–9999999 hold residents of a disputed zone assigned to another
+  municipality.
+
+`census-sections-2021/manifest.json` records each region's source archive and
+SHA-256 digest, file digest, section count, bounding box and census totals.
+Field definitions are ISTAT's own, in the source's
+[description](https://www.istat.it/wp-content/uploads/2024/07/Descrizione-dei-dati-Basi-territoriali.pdf).
+Attribution: ISTAT, Basi territoriali 2021, CC BY 4.0.
 
 ## Integrity and source
 
