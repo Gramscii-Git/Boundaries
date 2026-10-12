@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "geometry": {
+    "file": "istat-2024.zip",
+    "url": "https://www.istat.it/storage/cartografia/confini_amministrativi/generalizzati/2024/Limiti01012024_g.zip",
+    "sha256": "c3545d15a15bdb1271db22a5ce5cb21614c72422736cf6b9cd1e6426896be265",
+    "observed_at": "2026-10-12T13:43:33.579479+00:00"
+  },
+  "identities": {
+    "file": "istat-current-municipalities.csv",
+    "url": "https://www.istat.it/storage/codici-unita-amministrative/Elenco-comuni-italiani.csv",
+    "sha256": "57eaf945182fc64fa05f80f1a5fb2a84cff55ebde2af6e3947a731776e7809e0",
+    "observed_at": "2026-10-12T13:41:09.611335+00:00"
+  },
+  "member": "Limiti01012024_g/ProvCM01012024_g/ProvCM01012024_g_WGS84",
+  "projection_sha256": "10a2674d7bc43a70df19daf98d0b1deb3f5222f03659e1b4d82b395c20177cb9",
+  "geometry_encoding": "utf-8",
+  "identity_encoding": "latin-1",
+  "identity_delimiter": ";",
+  "geometry_code_field": "COD_PROV",
+  "geometry_name_field": "DEN_UTS",
+  "identity_code_field": "Codice Provincia (Storico)(1)",
+  "identity_nuts_field": "Codice NUTS3 2024",
+  "code_width": 3,
+  "code_pattern": "[0-9]{3}",
+  "nuts_pattern": "IT[A-Z0-9]{3}",
+  "expected_identity_rows": 7896,
+  "expected_units": 107,
+  "expected_invalid_geometry_codes": [
+    "ITG2D"
+  ],
+  "canvas_width": 1000.0,
+  "coordinate_decimals": 1,
+  "simplification_tolerance": 250.0,
+  "output_file": "italy-nuts3-2024.geo.json",
+  "classification": "NUTS 2024",
+  "classification_vintage": "2024",
+  "reference_date": "2024-01-01",
+  "attribution": "ISTAT, administrative boundaries on 1 January 2024 (generalised), NUTS 2024 codes from the ISTAT municipality registry, CC BY 4.0. Source polygon ITG2D is not OGC-valid.",
+  "license_id": "istat-cc-by-4.0",
+  "license": {
+    "name": "CC BY 4.0",
+    "terms": "https://www.istat.it/dati/open-data/",
+    "attribution": "ISTAT, Confini delle unità amministrative a fini statistici, CC BY 4.0",
+    "commercial_use": true
+  }
+}

@@ -13,7 +13,8 @@ a file is a JSON document a browser can draw with one `<svg>` element.
 | --- | ---: | --- | --- | --- | --- |
 | `italy-macro-areas.geo.json` | 5 | Italian macro-areas (ripartizioni, NUTS 1) | ripartizione number (`2`), the NUTS 1 code ISTAT publishes under (`ITD`) and the NUTS 2024 code (`ITH`) | ISTAT, 1 January 2026 | CC BY 4.0 |
 | `italy-regions.geo.json` | 22 | Italian regions (NUTS 2), plus the autonomous provinces of Trento and Bolzano and Trentino-Alto Adige as a whole | ISTAT region code (`05`), NUTS 2 code in both vintages (`ITD3`, `ITH3`), name as written and in upper case (`Veneto`, `VENETO`) | ISTAT, 1 January 2026 | CC BY 4.0 |
-| `italy-provinces.geo.json` | 110 | Italian provinces and metropolitan cities (NUTS 3) | ISTAT province code (`015`), NUTS 3 code (`ITC4C`), licence plate (`MI`) | ISTAT, 1 January 2026 | CC BY 4.0 |
+| `italy-provinces.geo.json` | 110 | Italian administrative provinces and metropolitan cities | ISTAT province code (`015`), licence plate (`MI`) | ISTAT, 1 January 2026 | CC BY 4.0 |
+| `italy-nuts3-2024.geo.json` | 107 | Italian NUTS 3 statistical units, using the 2024 administrative geography | NUTS 2024 code (`ITC4C`), dated ISTAT province code (`015`) | ISTAT, 1 January 2024 and its NUTS 2024 identity registry | CC BY 4.0 |
 | `italy-municipalities.geo.json` | 7,896 | Italian municipalities (LAU) | ISTAT municipality code (`015146`); 377 municipalities also carry the code they had under an earlier provincial layout | ISTAT, 1 January 2026 | CC BY 4.0 |
 | `italy-municipalities-2018.geo.json` | 7,954 | Municipalities active at the end of 2018 | ISTAT municipality code | ISTAT SITUAS inventory; 2018 and 2019 boundary releases | CC BY 4.0 |
 | `italy-municipalities-2019.geo.json` | 7,914 | Municipalities active at the end of 2019 | ISTAT municipality code | ISTAT SITUAS inventory; 2019 and 2020 boundary releases | CC BY 4.0 |
@@ -162,12 +163,41 @@ eastings and northings.
    a boundary moves by less than a pixel.
 3. Each polygon is written as an SVG path with one decimal of precision.
 4. Identifiers are attached from ISTAT's own classification: ripartizione,
-   region, province and municipality codes, NUTS codes, licence plates,
+   region, province and municipality codes, regional NUTS codes, licence plates,
    and for municipalities the codes they carried under an earlier
    provincial layout, so data keyed by either vintage lands on the same
    shape. NUTS 2010 renamed Italy's `ITD` to `ITH` and `ITE` to `ITI`;
    ISTAT still publishes under the old letters and Eurostat under the
    new, so macro-areas and regions carry both.
+
+Administrative provinces carry only their source province code and available
+vehicle registration code. Their 2026 geography is not the NUTS 2024 geography.
+
+### Italian NUTS 3
+
+`italy-nuts3-2024.geo.json` joins all 107 province polygons in ISTAT's
+1 January 2024 release to the explicit `Codice NUTS3 2024` field in ISTAT's
+municipality identity registry. Each archived province maps to exactly one
+NUTS unit. It includes the official Milano, Monza e della Brianza,
+Barletta-Andria-Trani and Sardinian codes and keeps the 2024 Sud Sardegna unit.
+It does not attach those units to the changed 2026 provincial boundaries.
+
+[`istat-nuts.build.json`](istat-nuts.build.json) pins both input URLs, download
+observations, checksums, identity fields, shapefile member, projection, counts,
+source quality, renderer settings and CC BY 4.0 terms. To reproduce it, save
+the declared files in `build/nuts/` and run:
+
+```sh
+uv sync --locked --group build
+.venv/bin/python -m scripts.istat_nuts --spec istat-nuts.build.json \
+  --inputs build/nuts --output build/nuts/istat-generated --usage commercial
+```
+
+The source polygon for Sassari (`ITG2D`) is not OGC-valid. The renderer retains
+that source geometry without repairing it and records its quality on the shape,
+in the file's `source_invalid_geometry_codes`, and in its visible attribution.
+Unexpected invalid polygons fail the build against the pinned quality inventory.
+This SVG asset is for display and is not a GIS polygon validity certification.
 
 ### Historical municipalities
 
@@ -333,7 +363,8 @@ repository, not the upstream archives.
 | --- | --- |
 | `italy-macro-areas.geo.json` | `7a7cd481b2860b8a7c232d192fdd55fa86ebb75b6a9552f568059bf49c7d4b9f` |
 | `italy-regions.geo.json` | `7963e74dc142126cc2807bef0be26d4117031851a08622fae9dd04c267f8ef26` |
-| `italy-provinces.geo.json` | `292b3a4bd42844846519e8271466d23e96cf207861cad858e1c238da416ca798` |
+| `italy-provinces.geo.json` | `55360e06c666fec6541d9a975a56e707d7079c261c841075f9a31ddeece2f175` |
+| `italy-nuts3-2024.geo.json` | `60b5f946837c0c6584651dc85bd171ed64e77760f7153c13e912ec200799f269` |
 | `italy-municipalities.geo.json` | `c0759f670a54920772b2cafd1541717e34c17b2a44cb970d0a7f05a502673420` |
 | `italy-municipalities-2018.geo.json` | `90ede3e5e6533edc5d58a8bf868f3654ee66607b6f8ff0b03a2030b19e73ff30` |
 | `italy-municipalities-2019.geo.json` | `4a6ee6c0675da5a736426f217665fa9f85f2e8c8a7f1c0b37b2186f80d518bd6` |

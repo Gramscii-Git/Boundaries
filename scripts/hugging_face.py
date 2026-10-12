@@ -17,6 +17,7 @@ DOCUMENTS = (
     "boundary-sets.json",
     "natural-earth.build.json",
     "nuts.build.json",
+    "istat-nuts.build.json",
 )
 PREVIEWS = (
     "europe-nuts1.png",
@@ -51,6 +52,9 @@ def _row(asset: dict, license_: dict, body: dict, shape: dict) -> dict:
         "source": body["source"],
         "source_archive_sha256": body.get("source_archive_sha256"),
         "source_geometry_sha256": body.get("source_geometry_sha256"),
+        "source_identity_sha256": body.get("source_identity_sha256"),
+        "source_geometry_valid": shape.get("source_geometry_valid"),
+        "source_invalid_geometry_codes": body.get("source_invalid_geometry_codes"),
         "reference_date": body.get("reference_date"),
         "outside_codes": body.get("outside", []),
         "partially_clipped_codes": body.get("partially_clipped"),

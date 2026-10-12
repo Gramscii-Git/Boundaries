@@ -58,10 +58,10 @@
       "level": "province",
       "classification": "ISTAT administrative units",
       "vintage": "2026-01-01",
-      "identifiers": ["ISTAT province", "NUTS 3", "vehicle registration code"],
+      "identifiers": ["ISTAT province", "vehicle registration code"],
       "license": "istat-cc-by-4.0",
       "shapes": 110,
-      "sha256": "292b3a4bd42844846519e8271466d23e96cf207861cad858e1c238da416ca798",
+      "sha256": "55360e06c666fec6541d9a975a56e707d7079c261c841075f9a31ddeece2f175",
       "classification_field": null
     },
     {
@@ -180,6 +180,19 @@
       "shapes": 247,
       "sha256": "68b225b731701c87d9b6a1db334760ed89de092f1b8b87649bedb51ae8046132",
       "classification_field": null
+    },
+    {
+      "id": "italy-nuts3-2024",
+      "file": "italy-nuts3-2024.geo.json",
+      "scope": "Italy",
+      "level": "nuts3",
+      "classification": "NUTS 2024",
+      "classification_field": "classification",
+      "vintage": "2024",
+      "identifiers": ["NUTS 3 2024", "ISTAT province 2024"],
+      "license": "istat-cc-by-4.0",
+      "shapes": 107,
+      "sha256": "60b5f946837c0c6584651dc85bd171ed64e77760f7153c13e912ec200799f269"
     }
   ]
 }

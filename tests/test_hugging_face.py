@@ -39,7 +39,7 @@ class HuggingFaceTests(unittest.TestCase):
                 )
             self.assertEqual(
                 sum(item["rows"] for item in release["data_files"].values()),
-                33852,
+                33959,
             )
             manifest = json.loads((root / "boundary-sets.json").read_bytes())
             expected_commercial_use = {

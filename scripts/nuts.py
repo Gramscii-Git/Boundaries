@@ -105,7 +105,8 @@ def build_map(rows: list[dict], spec: Specification, output) -> tuple[dict, dict
                 "eu_rendered_count": len(eu & drawn)}
     left, bottom, right, top = spec.render.frame
     width = spec.render.canvas_width
-    body = {"viewBox": f"0 0 {width:.0f} {(top - bottom) * width / (right - left):.1f}",
+    width_label = str(int(width)) if width.is_integer() else str(width)
+    body = {"viewBox": f"0 0 {width_label} {(top - bottom) * width / (right - left):.{spec.render.coordinate_decimals}f}",
             "source": spec.source.attribution, "source_geometry_sha256": spec.source.sha256,
             "classification_vintage": spec.source.classification_vintage,
             "license_id": spec.source.license_id, "license": spec.source.license.model_dump(),
@@ -151,13 +152,13 @@ def build(spec: Specification, source: Path, output: Path, usage: str) -> dict:
     output.mkdir(parents=True, exist_ok=True)
     write_geoparquet(rows, spec, output / spec.geoparquet.file)
     for item, (body, _) in zip(spec.render.outputs, products, strict=True):
-        (output / item.file).write_text(json.dumps(body, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+        (output / item.file).write_bytes((json.dumps(body, ensure_ascii=False, separators=(",", ":")) + "\n").encode())
     coverage = {"source": spec.source.model_dump(), "geoparquet": {"file": spec.geoparquet.file,
                 "rows": len(rows), "sha256": hashlib.sha256((output / spec.geoparquet.file).read_bytes()).hexdigest()},
                 "levels": [measured for _, measured in products]}
     target = output / spec.coverage_file
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(coverage, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    target.write_bytes((json.dumps(coverage, ensure_ascii=False, indent=2) + "\n").encode())
     return coverage
 
 
