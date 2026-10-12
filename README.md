@@ -314,6 +314,17 @@ invalid or ambiguous identities. It never downloads or substitutes a source.
 
 ## Integrity
 
+Verification runs locally. GitHub stores code, history and pull requests;
+GitHub Actions is disabled. Run the distribution and build contract tests with:
+
+```sh
+uv sync --locked --group build
+.venv/bin/python -m unittest discover -s tests -v
+git diff --check
+```
+
+Record the tested revision, platform, commands and results before merging.
+
 The files distributed here are identified by these SHA-256 digests, also
 listed in `SHA256SUMS`. They identify the adapted files in this
 repository, not the upstream archives.
