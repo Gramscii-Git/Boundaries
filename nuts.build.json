@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "source": {
+    "file": "build-nuts-source.geojson",
+    "url": "https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_03M_2024_3035.geojson",
+    "sha256": "fb348b7206adf7f796b4ba6497ea4ce48e28199362d11a5d21d9298e0debf2fe",
+    "classification_vintage": "2024",
+    "observed_at": "2026-10-12T12:54:20Z",
+    "crs": "EPSG:3035",
+    "attribution": "Eurostat GISCO, NUTS 2024, 1:3M; administrative boundaries © EuroGeographics © UN-FAO © Turkstat",
+    "license_id": "gisco-nuts-non-commercial",
+    "license": {
+      "name": "Eurostat GISCO statistical units terms",
+      "terms": "https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units",
+      "attribution": "© EuroGeographics for the administrative boundaries",
+      "commercial_use": false
+    },
+    "fields": {
+      "code": "NUTS_ID",
+      "level": "LEVL_CODE",
+      "country": "CNTR_CODE",
+      "name": "NAME_LATN",
+      "membership": "EU_STAT"
+    },
+    "classifications": {
+      "T": "NUTS 2024",
+      "F": "Eurostat statistical regions 2024"
+    },
+    "eu_membership": "T",
+    "excluded_levels": [0],
+    "expected_counts": {"1": 115, "2": 299, "3": 1345},
+    "expected_eu_counts": {"1": 92, "2": 244, "3": 1165}
+  },
+  "render": {
+    "frame": [2600000.0, 1350000.0, 7350000.0, 5500000.0],
+    "canvas_width": 1000.0,
+    "coordinate_decimals": 1,
+    "outputs": [
+      {"level": 1, "file": "europe-nuts1.geo.json", "simplification_tolerance": 1500.0},
+      {"level": 2, "file": "europe-nuts2.geo.json", "simplification_tolerance": 1500.0},
+      {"level": 3, "file": "europe-nuts3.geo.json", "simplification_tolerance": 1000.0}
+    ]
+  },
+  "geoparquet": {
+    "file": "nuts-2024/regions.parquet",
+    "crs": "OGC:CRS84",
+    "version": "1.1.0",
+    "compression": "zstd"
+  },
+  "coverage_file": "nuts-2024/coverage.json"
+}

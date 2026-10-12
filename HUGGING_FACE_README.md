@@ -30,7 +30,7 @@ configs:
 # European Territory Boundaries
 
 Versioned, ready-to-draw administrative and statistical boundaries used by
-Gramscii's maps. The release contains 12 boundary sets and 33,852
+Gramscii's maps. The release contains 13 boundary sets and 33,959
 shapes. Every shape has provider-facing identifiers and an SVG path in the
 declared view box.
 
@@ -57,15 +57,29 @@ assets, one colour per shape.
 
 - `istat` contains the current and historical Italian administrative units.
   ISTAT permits commercial use under CC BY 4.0 with attribution.
+  Its separate `italy-nuts3-2024` set contains 107 statistical units using
+  the 2024 geometry. The 110 administrative provinces of 2026 carry source
+  administrative identifiers and do not claim NUTS 2024 aliases.
 - `natural-earth` contains country and separately coded territory map units.
   Natural Earth's source data is in the public domain; Gramscii's adaptation is
   CC BY 4.0.
 - `istat-census-sections-2021` contains ISTAT's 2021 census sections as
   GeoParquet, described below. ISTAT permits commercial use under CC BY 4.0
   with attribution.
-- `gisco-nuts-non-commercial` contains NUTS 2024 levels 1–3. Eurostat GISCO's
+- `gisco-nuts-non-commercial` contains EU NUTS 2024 levels 1–3 and Eurostat's
+  statistical regions for non-EU countries, classified separately per row. Eurostat GISCO's
   source terms limit these files to non-commercial use and require the stated
   attribution. Commercial use requires a licence from EuroGeographics.
+
+This release does not contain municipality boundaries across Europe.
+Italian administrative units are dated explicitly; NUTS levels are statistical
+regions and do not prove coverage of every country's regions and provinces.
+The European renderer frame contains 111, 291 and 1,330 units at levels 1, 2
+and 3, while the complete source has 115, 299 and 1,345. The EU source counts
+are 92, 244 and 1,165. Each renderer file records its `outside` and
+`partially_clipped` codes and measured coverage. The complete, unclipped
+GeoParquet export is reproducible locally with `nuts.build.json`; it is not
+part of this published viewer configuration.
 
 The repository uses `license: other` because one licence label cannot represent
 the mixed source terms. Gramscii's projection, simplification, SVG conversion
@@ -101,11 +115,16 @@ Each viewer row contains:
 - boundary-set identity, scope, level, classification and vintage;
 - identifier families, licence identity and commercial-use status;
 - source, view box, source archive digest where applicable and outside codes;
+- source geometry digest and partially clipped codes where measured;
+- identity-source digest and source geometry validity where measured;
 - shape name, aliases and SVG path;
 - reference and boundary dates where the source provides them.
 
 The geometry is simplified for screen rendering. It is not suitable for legal
 boundaries, cadastral work, distance measurement or area measurement.
+The Italian NUTS 2024 source polygon `ITG2D` (Sassari) is not OGC-valid.
+Its quality flag and attribution identify that source limitation; the renderer
+does not repair it or present it as a valid GIS polygon.
 
 ## Census sections 2021
 
@@ -142,5 +161,9 @@ Attribution: ISTAT, Basi territoriali 2021, CC BY 4.0.
 
 `SHA256SUMS` identifies every canonical geometry asset. Natural Earth inputs are
 reproducible from the exact Map Units 5.1.1 archive pinned in
-`natural-earth.build.json`. The source repository, build contracts and tests are
+`natural-earth.build.json`. Regional geometry inputs, inventories, render
+settings and non-commercial source terms are pinned in `nuts.build.json`.
+The separate Italian NUTS 2024 geography, licensed for commercial use, is
+reproducible from `istat-nuts.build.json` and its two pinned ISTAT inputs.
+The source repository, build contracts and tests are
 at [`Gramscii-Git/boundaries`](https://github.com/Gramscii-Git/boundaries).
