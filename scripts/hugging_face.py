@@ -7,29 +7,26 @@ import gzip
 import hashlib
 import json
 import shutil
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
-DOCUMENTS = (
-    "LICENSE",
-    "NATURAL-EARTH.md",
-    "GISCO-NUTS.md",
-    "SHA256SUMS",
-    "boundary-sets.json",
-    "natural-earth.build.json",
-    "nuts.build.json",
-    "istat-nuts.build.json",
-)
-PREVIEWS = (
-    "europe-nuts1.png",
-    "europe-nuts2.png",
-    "europe-nuts3.png",
-    "europe.png",
-    "italy-macro-areas.png",
-    "italy-municipalities.png",
-    "italy-provinces.png",
-    "italy-regions.png",
-    "world.png",
-)
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+
+class Publication(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
+    readme: str = Field(min_length=1)
+    documents: list[str] = Field(min_length=1)
+    previews: list[str]
+
+    @model_validator(mode="after")
+    def paths(self):
+        paths = [self.readme, *self.documents, *self.previews]
+        if len(set(paths)) != len(paths):
+            raise ValueError("publication source paths must be distinct")
+        if any(not name.strip() or PurePosixPath(name).is_absolute()
+               or '..' in PurePosixPath(name).parts for name in paths):
+            raise ValueError("publication source paths must remain inside the repository")
+        return self
 
 
 def _digest(path: Path) -> str:
@@ -56,29 +53,32 @@ def _row(asset: dict, license_: dict, body: dict, shape: dict) -> dict:
         "source_geometry_valid": shape.get("source_geometry_valid"),
         "source_invalid_geometry_codes": body.get("source_invalid_geometry_codes"),
         "reference_date": body.get("reference_date"),
-        "outside_codes": body.get("outside", []),
+        "outside_codes": body.get("outside"),
         "partially_clipped_codes": body.get("partially_clipped"),
         "name": shape["name"],
         "aliases": shape["aliases"],
         "svg_path": shape["d"],
         "boundary_date": shape.get("boundary_date"),
+        "frame_id": shape.get("frame"),
+        "parent_codes": shape.get("parents"),
     }
 
 
 def build(root: Path, output: Path) -> dict:
     manifest = json.loads((root / "boundary-sets.json").read_bytes())
+    publication = Publication.model_validate(manifest["publication"])
     if output.exists() and any(output.iterdir()):
         raise ValueError("Hugging Face publication output directory is not empty")
     output.mkdir(parents=True, exist_ok=True)
     data = output / "data"
     data.mkdir(exist_ok=True)
-    shutil.copy2(root / "HUGGING_FACE_README.md", output / "README.md")
-    for name in DOCUMENTS:
+    shutil.copy2(root / publication.readme, output / "README.md")
+    for name in publication.documents:
+        (output / name).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(root / name, output / name)
-    previews = output / "preview"
-    previews.mkdir()
-    for name in PREVIEWS:
-        shutil.copy2(root / "preview" / name, previews / name)
+    for name in publication.previews:
+        (output / name).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(root / name, output / name)
 
     grouped: dict[str, list[dict]] = {
         license_["viewer_config"]: [] for license_ in manifest["licenses"].values()

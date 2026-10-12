@@ -17,6 +17,10 @@ configs:
   data_files:
   - split: train
     path: data/natural-earth.jsonl.gz
+- config_name: ign-insee
+  data_files:
+  - split: train
+    path: data/ign-insee.jsonl.gz
 - config_name: gisco-nuts-non-commercial
   data_files:
   - split: train
@@ -30,15 +34,19 @@ configs:
 # European Territory Boundaries
 
 Versioned, ready-to-draw administrative and statistical boundaries used by
-Gramscii's maps. The release contains 13 boundary sets and 33,959
+Gramscii's maps. The source checkout contains 16 boundary sets and 68,953
 shapes. Every shape has provider-facing identifiers and an SVG path in the
 declared view box.
 
-The raw `*.geo.json` files are the canonical renderer assets. The three compressed
+The raw `*.geo.json` files are the canonical renderer assets. The four compressed
 JSONL files expose the same shapes as rows for the Hugging Face dataset viewer.
 `boundary-sets.json` records each set's territorial level, classification,
 vintage, identifier families, source terms, commercial-use status, shape count
 and SHA-256 digest.
+
+Source changes and local packaging do not update the live Hugging Face dataset.
+Published snapshot coverage belongs to that snapshot's own manifest; uploading
+a release is a separate explicit action.
 
 ## Preview
 
@@ -63,6 +71,12 @@ assets, one colour per shape.
 - `natural-earth` contains country and separately coded territory map units.
   Natural Earth's source data is in the public domain; Gramscii's adaptation is
   CC BY 4.0.
+- `ign-insee` contains the 18 regions, 101 departments and 34,875 municipalities
+  of metropolitan France and its five DROM on 1 January 2026. IGN geometry joins
+  the independent INSEE COG registry, preserving text identifiers and native
+  parents. The sources permit commercial reuse under Licence Ouverte 2.0 with
+  attribution. Other French overseas collectivities are outside this scope.
+  DROM panels use independent scales and no admitted geometry is clipped.
 - `istat-census-sections-2021` contains ISTAT's 2021 census sections as
   GeoParquet, described below. ISTAT permits commercial use under CC BY 4.0
   with attribution.
@@ -72,7 +86,7 @@ assets, one colour per shape.
   attribution. Commercial use requires a licence from EuroGeographics.
 
 This release does not contain municipality boundaries across Europe.
-Italian administrative units are dated explicitly; NUTS levels are statistical
+Italian and French administrative units are dated explicitly; NUTS levels are statistical
 regions and do not prove coverage of every country's regions and provinces.
 The European renderer frame contains 111, 291 and 1,330 units at levels 1, 2
 and 3, while the complete source has 115, 299 and 1,345. The EU source counts
@@ -85,7 +99,7 @@ The repository uses `license: other` because one licence label cannot represent
 the mixed source terms. Gramscii's projection, simplification, SVG conversion
 and identifier enrichment are CC BY 4.0; that licence does not replace a source
 dataset's terms. See `LICENSE`, `NATURAL-EARTH.md`, `GISCO-NUTS.md` and
-`boundary-sets.json` before reuse.
+`boundary-sets.json` and `docs/france-coverage.md` before reuse.
 
 ## Join contract
 
@@ -119,6 +133,7 @@ Each viewer row contains:
 - identity-source digest and source geometry validity where measured;
 - shape name, aliases and SVG path;
 - reference and boundary dates where the source provides them.
+- renderer panel and native administrative parent codes where measured.
 
 The geometry is simplified for screen rendering. It is not suitable for legal
 boundaries, cadastral work, distance measurement or area measurement.
@@ -165,5 +180,8 @@ reproducible from the exact Map Units 5.1.1 archive pinned in
 settings and non-commercial source terms are pinned in `nuts.build.json`.
 The separate Italian NUTS 2024 geography, licensed for commercial use, is
 reproducible from `istat-nuts.build.json` and its two pinned ISTAT inputs.
+French geometry and parent assignments are reproducible from `france.build.json`.
+The complete selected French polygons export locally as GeoParquet; those
+ignored build outputs are not part of the SVG viewer configuration.
 The source repository, build contracts and tests are
 at [`Gramscii-Git/boundaries`](https://github.com/Gramscii-Git/boundaries).

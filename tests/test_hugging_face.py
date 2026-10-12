@@ -6,7 +6,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.hugging_face import PREVIEWS, build
+from pydantic import ValidationError
+
+from scripts.hugging_face import Publication, build
 
 
 class HuggingFaceTests(unittest.TestCase):
@@ -20,26 +22,28 @@ class HuggingFaceTests(unittest.TestCase):
 
     def test_build_has_deterministic_complete_licence_separated_rows(self):
         root = Path(__file__).parents[1]
+        manifest = json.loads((root / "boundary-sets.json").read_bytes())
+        publication = Publication.model_validate(manifest['publication'])
         with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
             release = build(root, Path(first))
             repeated = build(root, Path(second))
             self.assertEqual(release, repeated)
             self.assertEqual(
                 {path.name for path in (Path(first) / "preview").glob("*.png")},
-                set(PREVIEWS),
+                {Path(name).name for name in publication.previews},
             )
-            for name in PREVIEWS:
+            for name in publication.previews:
                 self.assertEqual(
-                    (Path(first) / "preview" / name).read_bytes(),
-                    (root / "preview" / name).read_bytes(),
+                    (Path(first) / name).read_bytes(),
+                    (root / name).read_bytes(),
                 )
                 self.assertEqual(
-                    (Path(second) / "preview" / name).read_bytes(),
-                    (root / "preview" / name).read_bytes(),
+                    (Path(second) / name).read_bytes(),
+                    (root / name).read_bytes(),
                 )
             self.assertEqual(
                 sum(item["rows"] for item in release["data_files"].values()),
-                33959,
+                68953,
             )
             manifest = json.loads((root / "boundary-sets.json").read_bytes())
             expected_commercial_use = {
@@ -54,7 +58,7 @@ class HuggingFaceTests(unittest.TestCase):
                     {row["commercial_use"] for row in rows},
                     {expected_commercial_use[group]},
                 )
-                regional = [row for row in rows if row["source_geometry_sha256"] is not None]
+                regional = [row for row in rows if row['license_id']=='gisco-nuts-non-commercial']
                 if regional:
                     spec = json.loads((root / "nuts.build.json").read_bytes())
                     self.assertEqual({row["source_geometry_sha256"] for row in regional},
@@ -76,6 +80,15 @@ class HuggingFaceTests(unittest.TestCase):
                     len(identities),
                     sum(len(row["aliases"]) for row in rows),
                 )
+
+    def test_publication_configuration_requires_explicit_safe_paths(self):
+        good={'readme':'HUGGING_FACE_README.md','documents':['LICENSE'],'previews':[]}
+        for field in Publication.model_fields:
+            with self.subTest(field=field), self.assertRaises(ValidationError):
+                Publication.model_validate({name:value for name,value in good.items() if name!=field})
+        for path in ['../private.json','/private.json','']:
+            with self.subTest(path=path), self.assertRaises(ValidationError):
+                Publication.model_validate({**good,'documents':[path]})
 
 
 if __name__ == "__main__":
