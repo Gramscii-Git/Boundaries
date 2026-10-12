@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import argparse
-import gzip
 import hashlib
 import json
 import shutil
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
 
+import pyarrow as pa
+import pyarrow.parquet as pq
 from datasets import load_dataset
 from datasets.info import DatasetInfosDict
 from huggingface_hub import DatasetCard
@@ -21,6 +22,7 @@ class Publication(BaseModel):
     readme: str = Field(min_length=1)
     documents: list[str] = Field(min_length=1)
     previews: list[str]
+    table_compression: str = Field(min_length=1)
 
     @model_validator(mode="after")
     def paths(self):
@@ -68,16 +70,21 @@ def _row(asset: dict, license_: dict, body: dict, shape: dict) -> dict:
     }
 
 
-def validate_rows(output: Path, release: dict) -> None:
+def _schemas(output: Path, groups) -> dict:
     card = DatasetCard.load(str(output / "README.md"))
     infos = DatasetInfosDict.from_dataset_card_data(card.data)
+    for group in groups:
+        if group not in infos or infos[group].features is None:
+            raise ValueError(f"publication column schema is missing: {group}")
+    return {group: infos[group].features for group in groups}
+
+
+def validate_rows(output: Path, release: dict) -> None:
+    _schemas(output, release["data_files"])
     with TemporaryDirectory() as cache:
         for group, file in release["data_files"].items():
-            if group not in infos or infos[group].features is None:
-                raise ValueError(f"publication column schema is missing: {group}")
             dataset = load_dataset(
-                "json", data_files=str(output / file["file"]), split="train",
-                features=infos[group].features, cache_dir=cache,
+                str(output.resolve()), name=group, split="train", cache_dir=cache,
             )
             if len(dataset) != file["rows"]:
                 raise ValueError(f"publication row count differs: {group}")
@@ -102,6 +109,7 @@ def build(root: Path, output: Path) -> dict:
     grouped: dict[str, list[dict]] = {
         license_["viewer_config"]: [] for license_ in manifest["licenses"].values()
     }
+    schemas = _schemas(output, grouped)
     for asset in manifest["boundary_sets"]:
         source = root / asset["file"]
         if _digest(source) != asset["sha256"]:
@@ -116,15 +124,9 @@ def build(root: Path, output: Path) -> dict:
 
     release = {"schema_version": 1, "dataset_id": manifest["dataset_id"], "data_files": {}}
     for group, rows in grouped.items():
-        target = data / f"{group}.jsonl.gz"
-        with (
-            target.open("wb") as raw,
-            gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as compressed,
-        ):
-            for row in rows:
-                compressed.write(
-                    (json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n").encode()
-                )
+        target = data / f"{group}.parquet"
+        table = pa.Table.from_pylist(rows, schema=schemas[group].arrow_schema)
+        pq.write_table(table, target, compression=publication.table_compression)
         release["data_files"][group] = {
             "file": str(target.relative_to(output)),
             "rows": len(rows),

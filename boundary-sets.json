@@ -284,6 +284,7 @@
     }
   ],
   "publication": {
+    "table_compression": "zstd",
     "readme": "HUGGING_FACE_README.md",
     "documents": [
       "LICENSE",
