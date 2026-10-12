@@ -6,9 +6,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from datasets import load_dataset
+from datasets.info import DatasetInfosDict
+from huggingface_hub import DatasetCard
 from pydantic import ValidationError
 
-from scripts.hugging_face import Publication, build
+from scripts.hugging_face import Publication, build, validate_rows
 
 
 class HuggingFaceTests(unittest.TestCase):
@@ -28,6 +31,19 @@ class HuggingFaceTests(unittest.TestCase):
             release = build(root, Path(first))
             repeated = build(root, Path(second))
             self.assertEqual(release, repeated)
+            infos = DatasetInfosDict.from_dataset_card_data(
+                DatasetCard.load(str(Path(first) / "README.md")).data,
+            )
+            self.assertEqual(
+                set(infos), set(release["data_files"]),
+            )
+            italian = load_dataset(
+                "json", data_files=str(Path(first) / release["data_files"]["istat"]["file"]),
+                split="train", features=infos["istat"].features, cache_dir=second,
+            )
+            nuts = italian.filter(lambda row: row["boundary_set_id"] == "italy-nuts3-2024")
+            self.assertEqual(set(nuts["vintage"]), {"2024"})
+            self.assertTrue(all(row["parent_codes"] is None for row in nuts))
             self.assertEqual(
                 {path.name for path in (Path(first) / "preview").glob("*.png")},
                 {Path(name).name for name in publication.previews},
@@ -89,6 +105,15 @@ class HuggingFaceTests(unittest.TestCase):
         for path in ['../private.json','/private.json','']:
             with self.subTest(path=path), self.assertRaises(ValidationError):
                 Publication.model_validate({**good,'documents':[path]})
+
+    def test_publication_rejects_missing_column_schema(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            (output / "README.md").write_text("---\nlicense: other\n---\n# Boundaries\n")
+            with self.assertRaisesRegex(ValueError, "column schema is missing: istat"):
+                validate_rows(output, {"data_files": {
+                    "istat": {"file": "data/istat.jsonl.gz", "rows": 1},
+                }})
 
 
 if __name__ == "__main__":
