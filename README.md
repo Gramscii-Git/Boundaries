@@ -214,21 +214,72 @@ control. Only reviewed distributable geometry belongs at the repository root.
 
 Source: Eurostat GISCO, *NUTS 2024*, region polygons at 1:3 million in
 EPSG:3035, file `NUTS_RG_03M_2024_3035.geojson` (SHA-256
-`b6c44e3ed6c1d8e33b98ba36fe8236f3c4b2bdc005049bb37320574be1601e33`).
+`fb348b7206adf7f796b4ba6497ea4ce48e28199362d11a5d21d9298e0debf2fe`).
+
+The source contains 115, 299 and 1,345 regional units at levels 1, 2 and 3.
+The EU subset is NUTS 2024: 92, 244 and 1,165 units. Non-EU units are
+Eurostat statistical regions, not EU NUTS. Each exported shape records this
+distinction. These statistical levels do not represent every country's native
+administrative hierarchy. This repository contains Italian municipalities;
+it does not contain a European municipality boundary set.
 
 1. One frame is fixed around the continent, from the Atlantic coast of
    Portugal to Cyprus and from Crete to the North Cape (EPSG:3035
    x 2,600–7,350 km, y 1,350–5,500 km), and applied to all three levels:
    the frame is drawn 1,000 units wide.
 2. Each polygon is clipped to the frame. A region lying wholly outside
-   it is not drawn and its code is listed under `outside`; Svalbard, off
-   the top of Norway, is cut away.
+   it is not drawn and its code is listed under `outside`. Regions that
+   extend outside it are recorded under `partially_clipped`: `NO0` at level
+   1 and `NO0B` at level 2.
 3. Each polygon is simplified with topology preserved, with a tolerance
    of 1,500 metres for NUTS 1 and 2 and 1,000 metres for NUTS 3. At this
    width one unit is about 4.75 kilometres, so a boundary moves by less
    than a third of a pixel.
 4. Each polygon is written as an SVG path with one decimal of precision,
-   named by its Latin name and identified by its NUTS 2024 code.
+   named by its Latin name and identified by its source regional code.
+
+| Level | Source units | Rendered units | Outside frame | Partly clipped | EU source units | EU rendered units |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 115 | 111 | 4 | 1 | 92 | 88 |
+| 2 | 299 | 291 | 8 | 1 | 244 | 236 |
+| 3 | 1,345 | 1,330 | 15 | 0 | 1,165 | 1,151 |
+
+[`nuts.build.json`](nuts.build.json) pins the source identity, observation time,
+digest, projection, classification fields, inventories, source terms and map
+settings. Save the source locally and run:
+
+```sh
+uv sync --locked --group build
+.venv/bin/python -m scripts.nuts --spec nuts.build.json \
+  --source build/nuts/build-nuts-source.geojson \
+  --output build/nuts/generated --usage non-commercial
+```
+
+The generator rejects a changed source, undeclared level, duplicate code,
+invalid polygon, incorrect inventory or commercial usage of the restricted
+source before writing output. It performs no source download or substitution.
+In addition to the renderer files, it exports all 1,759 original regional
+polygons to `nuts-2024/regions.parquet` as GeoParquet 1.1.0 in OGC:CRS84.
+These are the source's 1:3M polygons, without frame clipping or additional
+simplification; they are not cadastral or full-resolution boundaries.
+`nuts-2024/coverage.json` records exact excluded and clipped codes, EU counts,
+source provenance, licence and export checksum. Both exports retain GISCO's
+non-commercial restriction and stay in the ignored build output until an
+explicit publication action.
+
+### Commercial European coverage
+
+GISCO's NUTS and LAU terms do not permit commercial use of these files.
+European municipality coverage therefore needs independently licensed input,
+its native administrative hierarchy and dated identifiers. The
+[Open Maps for Europe licence](https://www.mapsforeurope.org/licence)
+permits commercial reuse of its named products with its required attribution;
+it does not change GISCO's terms. Verify each product's actual countries,
+levels, vintage and identifiers before admitting it into a commercial release.
+The detailed [EuroBoundaryMap](https://eurogeographics.org/activities/administrative-boundaries/)
+is a separate licensed product. Authoritative national administrative-unit
+datasets published under permissive terms provide another acquisition route.
+No alternative source is substituted automatically.
 
 ### Europe and the world
 
@@ -276,9 +327,9 @@ repository, not the upstream archives.
 | `italy-municipalities-2018.geo.json` | `90ede3e5e6533edc5d58a8bf868f3654ee66607b6f8ff0b03a2030b19e73ff30` |
 | `italy-municipalities-2019.geo.json` | `4a6ee6c0675da5a736426f217665fa9f85f2e8c8a7f1c0b37b2186f80d518bd6` |
 | `italy-municipalities-2021.geo.json` | `030f54e34fcf7b583a9863b46bfd1601c072499be24db1e7f9becb2daf093366` |
-| `europe-nuts1.geo.json` | `25ced35220f9d1dc5ef3573f6e9989b6de7859472d311fbac9b5e7bfa2a90539` |
-| `europe-nuts2.geo.json` | `6cf445662590b8ca7c17ff3394c1d7f3ae3febb32fa28eea6cedec236fc45eac` |
-| `europe-nuts3.geo.json` | `6f0c585c165fc4aa01651f51c3c20e1d86de1a042df240f81f9c6ff2226675da` |
+| `europe-nuts1.geo.json` | `dae9c4d6c4341679f3942b6d2561c5b43a2aeab0bf31e3bd68e53d5f01a21a32` |
+| `europe-nuts2.geo.json` | `a823239c7af6f3c764246e186ddca6dd6302a65791c602926bd0871bb64c932c` |
+| `europe-nuts3.geo.json` | `50b916560f82825922b4108f02f15dc6485458fd091234e10be31e311769a818` |
 | `europe.geo.json` | `70cd83aa4832c9d195108cc4e2990f128052e24acb4967cb7c6691b695401d09` |
 | `world.geo.json` | `68b225b731701c87d9b6a1db334760ed89de092f1b8b87649bedb51ae8046132` |
 

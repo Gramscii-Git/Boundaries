@@ -18,10 +18,10 @@
     },
     "gisco-nuts-non-commercial": {
       "viewer_config": "gisco-nuts-non-commercial",
-      "source_license": "Eurostat GISCO NUTS terms",
+      "source_license": "Eurostat GISCO statistical units terms",
       "commercial_use": false,
-      "terms": "https://ec.europa.eu/eurostat/en/web/gisco/geodata/statistical-units",
-      "attribution": "Eurostat GISCO, NUTS 2024, 1:3M; administrative boundaries © EuroGeographics © UN-FAO © Turkstat"
+      "terms": "https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units",
+      "attribution": "© EuroGeographics for the administrative boundaries"
     }
   },
   "boundary_sets": [
@@ -35,7 +35,8 @@
       "identifiers": ["ISTAT ripartizione", "NUTS 2010", "NUTS 2024"],
       "license": "istat-cc-by-4.0",
       "shapes": 5,
-      "sha256": "7a7cd481b2860b8a7c232d192fdd55fa86ebb75b6a9552f568059bf49c7d4b9f"
+      "sha256": "7a7cd481b2860b8a7c232d192fdd55fa86ebb75b6a9552f568059bf49c7d4b9f",
+      "classification_field": null
     },
     {
       "id": "italy-regions-2026",
@@ -47,7 +48,8 @@
       "identifiers": ["ISTAT region", "NUTS 2010", "NUTS 2024"],
       "license": "istat-cc-by-4.0",
       "shapes": 22,
-      "sha256": "7963e74dc142126cc2807bef0be26d4117031851a08622fae9dd04c267f8ef26"
+      "sha256": "7963e74dc142126cc2807bef0be26d4117031851a08622fae9dd04c267f8ef26",
+      "classification_field": null
     },
     {
       "id": "italy-provinces-2026",
@@ -59,7 +61,8 @@
       "identifiers": ["ISTAT province", "NUTS 3", "vehicle registration code"],
       "license": "istat-cc-by-4.0",
       "shapes": 110,
-      "sha256": "292b3a4bd42844846519e8271466d23e96cf207861cad858e1c238da416ca798"
+      "sha256": "292b3a4bd42844846519e8271466d23e96cf207861cad858e1c238da416ca798",
+      "classification_field": null
     },
     {
       "id": "italy-municipalities-2026",
@@ -71,7 +74,8 @@
       "identifiers": ["ISTAT municipality"],
       "license": "istat-cc-by-4.0",
       "shapes": 7896,
-      "sha256": "c0759f670a54920772b2cafd1541717e34c17b2a44cb970d0a7f05a502673420"
+      "sha256": "c0759f670a54920772b2cafd1541717e34c17b2a44cb970d0a7f05a502673420",
+      "classification_field": null
     },
     {
       "id": "italy-municipalities-2018",
@@ -83,7 +87,8 @@
       "identifiers": ["ISTAT municipality"],
       "license": "istat-cc-by-4.0",
       "shapes": 7954,
-      "sha256": "90ede3e5e6533edc5d58a8bf868f3654ee66607b6f8ff0b03a2030b19e73ff30"
+      "sha256": "90ede3e5e6533edc5d58a8bf868f3654ee66607b6f8ff0b03a2030b19e73ff30",
+      "classification_field": null
     },
     {
       "id": "italy-municipalities-2019",
@@ -95,7 +100,8 @@
       "identifiers": ["ISTAT municipality"],
       "license": "istat-cc-by-4.0",
       "shapes": 7914,
-      "sha256": "4a6ee6c0675da5a736426f217665fa9f85f2e8c8a7f1c0b37b2186f80d518bd6"
+      "sha256": "4a6ee6c0675da5a736426f217665fa9f85f2e8c8a7f1c0b37b2186f80d518bd6",
+      "classification_field": null
     },
     {
       "id": "italy-municipalities-2021",
@@ -107,43 +113,47 @@
       "identifiers": ["ISTAT municipality"],
       "license": "istat-cc-by-4.0",
       "shapes": 7904,
-      "sha256": "030f54e34fcf7b583a9863b46bfd1601c072499be24db1e7f9becb2daf093366"
+      "sha256": "030f54e34fcf7b583a9863b46bfd1601c072499be24db1e7f9becb2daf093366",
+      "classification_field": null
     },
     {
       "id": "europe-nuts1-2024",
       "file": "europe-nuts1.geo.json",
       "scope": "Europe",
       "level": "nuts1",
-      "classification": "NUTS 2024",
+      "classification": "NUTS 2024 and Eurostat statistical regions 2024",
       "vintage": "2024",
       "identifiers": ["NUTS 1"],
       "license": "gisco-nuts-non-commercial",
       "shapes": 111,
-      "sha256": "25ced35220f9d1dc5ef3573f6e9989b6de7859472d311fbac9b5e7bfa2a90539"
+      "sha256": "dae9c4d6c4341679f3942b6d2561c5b43a2aeab0bf31e3bd68e53d5f01a21a32",
+      "classification_field": "classification"
     },
     {
       "id": "europe-nuts2-2024",
       "file": "europe-nuts2.geo.json",
       "scope": "Europe",
       "level": "nuts2",
-      "classification": "NUTS 2024",
+      "classification": "NUTS 2024 and Eurostat statistical regions 2024",
       "vintage": "2024",
       "identifiers": ["NUTS 2"],
       "license": "gisco-nuts-non-commercial",
       "shapes": 291,
-      "sha256": "6cf445662590b8ca7c17ff3394c1d7f3ae3febb32fa28eea6cedec236fc45eac"
+      "sha256": "a823239c7af6f3c764246e186ddca6dd6302a65791c602926bd0871bb64c932c",
+      "classification_field": "classification"
     },
     {
       "id": "europe-nuts3-2024",
       "file": "europe-nuts3.geo.json",
       "scope": "Europe",
       "level": "nuts3",
-      "classification": "NUTS 2024",
+      "classification": "NUTS 2024 and Eurostat statistical regions 2024",
       "vintage": "2024",
       "identifiers": ["NUTS 3"],
       "license": "gisco-nuts-non-commercial",
       "shapes": 1330,
-      "sha256": "6f0c585c165fc4aa01651f51c3c20e1d86de1a042df240f81f9c6ff2226675da"
+      "sha256": "50b916560f82825922b4108f02f15dc6485458fd091234e10be31e311769a818",
+      "classification_field": "classification"
     },
     {
       "id": "europe-countries-natural-earth-5.1.1",
@@ -155,7 +165,8 @@
       "identifiers": ["ISO 3166-1 alpha-2", "ISO 3166-1 alpha-3", "Eurostat country alias"],
       "license": "natural-earth-public-domain",
       "shapes": 68,
-      "sha256": "70cd83aa4832c9d195108cc4e2990f128052e24acb4967cb7c6691b695401d09"
+      "sha256": "70cd83aa4832c9d195108cc4e2990f128052e24acb4967cb7c6691b695401d09",
+      "classification_field": null
     },
     {
       "id": "world-map-units-natural-earth-5.1.1",
@@ -167,7 +178,8 @@
       "identifiers": ["ISO 3166-1 alpha-2", "ISO 3166-1 alpha-3", "Eurostat country alias"],
       "license": "natural-earth-public-domain",
       "shapes": 247,
-      "sha256": "68b225b731701c87d9b6a1db334760ed89de092f1b8b87649bedb51ae8046132"
+      "sha256": "68b225b731701c87d9b6a1db334760ed89de092f1b8b87649bedb51ae8046132",
+      "classification_field": null
     }
   ]
 }

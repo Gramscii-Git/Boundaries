@@ -8,7 +8,7 @@ EuroGeographics EuroBoundaryMap, UN-FAO GAUL and TurkStat data.
 Eurostat distributes the NUTS boundaries under specific provisions, in
 addition to the general copyright policy of its website. In summary, as
 published on the
-[NUTS geodata page](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics):
+[statistical units terms](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units):
 
 1. The Commission grants a non-exclusive and non-transferable right to
    use and process the Eurostat/GISCO geographical data.
@@ -33,3 +33,8 @@ The adaptation in this repository (frame, clipping, simplification, SVG
 paths) is released by Gramscii under CC BY 4.0, see `LICENSE`. That
 licence covers the adaptation only and does not lift Eurostat's
 conditions on the data beneath it.
+
+The same source terms cover the complete geometry exported by `scripts.nuts`.
+Its explicit `--usage commercial` request fails for this source; generating
+GeoParquet or preserving the polygons outside the renderer frame does not
+grant additional reuse rights.

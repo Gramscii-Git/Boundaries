@@ -16,6 +16,7 @@ DOCUMENTS = (
     "SHA256SUMS",
     "boundary-sets.json",
     "natural-earth.build.json",
+    "nuts.build.json",
 )
 PREVIEWS = (
     "europe-nuts1.png",
@@ -40,7 +41,8 @@ def _row(asset: dict, license_: dict, body: dict, shape: dict) -> dict:
         "source_file": asset["file"],
         "scope": asset["scope"],
         "level": asset["level"],
-        "classification": asset["classification"],
+        "classification": (asset["classification"] if asset["classification_field"] is None
+                           else shape[asset["classification_field"]]),
         "vintage": asset["vintage"],
         "identifiers": asset["identifiers"],
         "license_id": asset["license"],
@@ -48,8 +50,10 @@ def _row(asset: dict, license_: dict, body: dict, shape: dict) -> dict:
         "view_box": body["viewBox"],
         "source": body["source"],
         "source_archive_sha256": body.get("source_archive_sha256"),
+        "source_geometry_sha256": body.get("source_geometry_sha256"),
         "reference_date": body.get("reference_date"),
         "outside_codes": body.get("outside", []),
+        "partially_clipped_codes": body.get("partially_clipped"),
         "name": shape["name"],
         "aliases": shape["aliases"],
         "svg_path": shape["d"],

@@ -54,6 +54,15 @@ class HuggingFaceTests(unittest.TestCase):
                     {row["commercial_use"] for row in rows},
                     {expected_commercial_use[group]},
                 )
+                regional = [row for row in rows if row["source_geometry_sha256"] is not None]
+                if regional:
+                    spec = json.loads((root / "nuts.build.json").read_bytes())
+                    self.assertEqual({row["source_geometry_sha256"] for row in regional},
+                                     {spec["source"]["sha256"]})
+                    self.assertEqual({row["classification"] for row in regional},
+                                     set(spec["source"]["classifications"].values()))
+                    self.assertTrue(all(isinstance(row["partially_clipped_codes"], list)
+                                        for row in regional))
                 self.assertEqual(
                     {manifest["licenses"][row["license_id"]]["viewer_config"] for row in rows},
                     {group},
