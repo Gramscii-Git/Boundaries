@@ -29,6 +29,69 @@ configs:
   data_files:
   - split: train
     path: census-sections-2021/*.parquet
+dataset_info:
+- config_name: istat
+  features: &boundary_features
+  - name: boundary_set_id
+    dtype: string
+  - name: source_file
+    dtype: string
+  - name: scope
+    dtype: string
+  - name: level
+    dtype: string
+  - name: classification
+    dtype: string
+  - name: vintage
+    dtype: string
+  - name: identifiers
+    list: string
+  - name: license_id
+    dtype: string
+  - name: commercial_use
+    dtype: bool
+  - name: view_box
+    dtype: string
+  - name: source
+    dtype: string
+  - name: source_archive_sha256
+    dtype: string
+  - name: source_geometry_sha256
+    dtype: string
+  - name: source_identity_sha256
+    dtype: string
+  - name: source_geometry_valid
+    dtype: bool
+  - name: source_invalid_geometry_codes
+    list: string
+  - name: reference_date
+    dtype: string
+  - name: outside_codes
+    list: string
+  - name: partially_clipped_codes
+    list: string
+  - name: name
+    dtype: string
+  - name: aliases
+    list: string
+  - name: svg_path
+    dtype: string
+  - name: boundary_date
+    dtype: string
+  - name: frame_id
+    dtype: string
+  - name: parent_codes
+    struct:
+    - name: department
+      dtype: string
+    - name: region
+      dtype: string
+- config_name: natural-earth
+  features: *boundary_features
+- config_name: ign-insee
+  features: *boundary_features
+- config_name: gisco-nuts-non-commercial
+  features: *boundary_features
 ---
 
 # European Territory Boundaries
@@ -40,6 +103,9 @@ declared view box.
 
 The raw `*.geo.json` files are the canonical renderer assets. The four compressed
 JSONL files expose the same shapes as rows for the Hugging Face dataset viewer.
+The card declares their column types explicitly. Vintages and reference dates
+remain source strings, including year-only values; native identifiers retain
+leading zeroes. Missing optional source fields remain null.
 `boundary-sets.json` records each set's territorial level, classification,
 vintage, identifier families, source terms, commercial-use status, shape count
 and SHA-256 digest.

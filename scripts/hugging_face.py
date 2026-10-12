@@ -8,7 +8,11 @@ import hashlib
 import json
 import shutil
 from pathlib import Path, PurePosixPath
+from tempfile import TemporaryDirectory
 
+from datasets import load_dataset
+from datasets.info import DatasetInfosDict
+from huggingface_hub import DatasetCard
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -64,6 +68,21 @@ def _row(asset: dict, license_: dict, body: dict, shape: dict) -> dict:
     }
 
 
+def validate_rows(output: Path, release: dict) -> None:
+    card = DatasetCard.load(str(output / "README.md"))
+    infos = DatasetInfosDict.from_dataset_card_data(card.data)
+    with TemporaryDirectory() as cache:
+        for group, file in release["data_files"].items():
+            if group not in infos or infos[group].features is None:
+                raise ValueError(f"publication column schema is missing: {group}")
+            dataset = load_dataset(
+                "json", data_files=str(output / file["file"]), split="train",
+                features=infos[group].features, cache_dir=cache,
+            )
+            if len(dataset) != file["rows"]:
+                raise ValueError(f"publication row count differs: {group}")
+
+
 def build(root: Path, output: Path) -> dict:
     manifest = json.loads((root / "boundary-sets.json").read_bytes())
     publication = Publication.model_validate(manifest["publication"])
@@ -111,6 +130,7 @@ def build(root: Path, output: Path) -> dict:
             "rows": len(rows),
             "sha256": _digest(target),
         }
+    validate_rows(output, release)
     (output / "publication.json").write_bytes(
         (json.dumps(release, ensure_ascii=False, indent=2) + "\n").encode()
     )
