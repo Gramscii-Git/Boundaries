@@ -22,6 +22,13 @@
       "commercial_use": false,
       "terms": "https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units",
       "attribution": "© EuroGeographics for the administrative boundaries"
+    },
+    "ign-insee-open-licence": {
+      "viewer_config": "ign-insee",
+      "source_license": "Licence Ouverte / Open Licence 2.0",
+      "commercial_use": true,
+      "terms": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
+      "attribution": "IGN, ADMIN EXPRESS COG CARTO PE 4.0, edition 1 January 2026, delivery 2026-06-00527; INSEE, Code officiel géographique 2026, published 24 February 2026"
     }
   },
   "boundary_sets": [
@@ -32,7 +39,11 @@
       "level": "macro-area",
       "classification": "ISTAT administrative units with NUTS aliases",
       "vintage": "2026-01-01",
-      "identifiers": ["ISTAT ripartizione", "NUTS 2010", "NUTS 2024"],
+      "identifiers": [
+        "ISTAT ripartizione",
+        "NUTS 2010",
+        "NUTS 2024"
+      ],
       "license": "istat-cc-by-4.0",
       "shapes": 5,
       "sha256": "7a7cd481b2860b8a7c232d192fdd55fa86ebb75b6a9552f568059bf49c7d4b9f",
@@ -45,7 +56,11 @@
       "level": "region",
       "classification": "ISTAT administrative units with NUTS aliases",
       "vintage": "2026-01-01",
-      "identifiers": ["ISTAT region", "NUTS 2010", "NUTS 2024"],
+      "identifiers": [
+        "ISTAT region",
+        "NUTS 2010",
+        "NUTS 2024"
+      ],
       "license": "istat-cc-by-4.0",
       "shapes": 22,
       "sha256": "7963e74dc142126cc2807bef0be26d4117031851a08622fae9dd04c267f8ef26",
@@ -58,7 +73,10 @@
       "level": "province",
       "classification": "ISTAT administrative units",
       "vintage": "2026-01-01",
-      "identifiers": ["ISTAT province", "vehicle registration code"],
+      "identifiers": [
+        "ISTAT province",
+        "vehicle registration code"
+      ],
       "license": "istat-cc-by-4.0",
       "shapes": 110,
       "sha256": "55360e06c666fec6541d9a975a56e707d7079c261c841075f9a31ddeece2f175",
@@ -71,7 +89,9 @@
       "level": "municipality",
       "classification": "ISTAT administrative units",
       "vintage": "2026-01-01",
-      "identifiers": ["ISTAT municipality"],
+      "identifiers": [
+        "ISTAT municipality"
+      ],
       "license": "istat-cc-by-4.0",
       "shapes": 7896,
       "sha256": "c0759f670a54920772b2cafd1541717e34c17b2a44cb970d0a7f05a502673420",
@@ -84,7 +104,9 @@
       "level": "municipality",
       "classification": "ISTAT SITUAS active municipalities",
       "vintage": "2018-12-31",
-      "identifiers": ["ISTAT municipality"],
+      "identifiers": [
+        "ISTAT municipality"
+      ],
       "license": "istat-cc-by-4.0",
       "shapes": 7954,
       "sha256": "90ede3e5e6533edc5d58a8bf868f3654ee66607b6f8ff0b03a2030b19e73ff30",
@@ -97,7 +119,9 @@
       "level": "municipality",
       "classification": "ISTAT SITUAS active municipalities",
       "vintage": "2019-12-31",
-      "identifiers": ["ISTAT municipality"],
+      "identifiers": [
+        "ISTAT municipality"
+      ],
       "license": "istat-cc-by-4.0",
       "shapes": 7914,
       "sha256": "4a6ee6c0675da5a736426f217665fa9f85f2e8c8a7f1c0b37b2186f80d518bd6",
@@ -110,7 +134,9 @@
       "level": "municipality",
       "classification": "ISTAT SITUAS active municipalities",
       "vintage": "2021-12-31",
-      "identifiers": ["ISTAT municipality"],
+      "identifiers": [
+        "ISTAT municipality"
+      ],
       "license": "istat-cc-by-4.0",
       "shapes": 7904,
       "sha256": "030f54e34fcf7b583a9863b46bfd1601c072499be24db1e7f9becb2daf093366",
@@ -123,7 +149,9 @@
       "level": "nuts1",
       "classification": "NUTS 2024 and Eurostat statistical regions 2024",
       "vintage": "2024",
-      "identifiers": ["NUTS 1"],
+      "identifiers": [
+        "NUTS 1"
+      ],
       "license": "gisco-nuts-non-commercial",
       "shapes": 111,
       "sha256": "dae9c4d6c4341679f3942b6d2561c5b43a2aeab0bf31e3bd68e53d5f01a21a32",
@@ -136,7 +164,9 @@
       "level": "nuts2",
       "classification": "NUTS 2024 and Eurostat statistical regions 2024",
       "vintage": "2024",
-      "identifiers": ["NUTS 2"],
+      "identifiers": [
+        "NUTS 2"
+      ],
       "license": "gisco-nuts-non-commercial",
       "shapes": 291,
       "sha256": "a823239c7af6f3c764246e186ddca6dd6302a65791c602926bd0871bb64c932c",
@@ -149,7 +179,9 @@
       "level": "nuts3",
       "classification": "NUTS 2024 and Eurostat statistical regions 2024",
       "vintage": "2024",
-      "identifiers": ["NUTS 3"],
+      "identifiers": [
+        "NUTS 3"
+      ],
       "license": "gisco-nuts-non-commercial",
       "shapes": 1330,
       "sha256": "50b916560f82825922b4108f02f15dc6485458fd091234e10be31e311769a818",
@@ -162,7 +194,11 @@
       "level": "country",
       "classification": "Natural Earth Admin 0 Map Units",
       "vintage": "5.1.1",
-      "identifiers": ["ISO 3166-1 alpha-2", "ISO 3166-1 alpha-3", "Eurostat country alias"],
+      "identifiers": [
+        "ISO 3166-1 alpha-2",
+        "ISO 3166-1 alpha-3",
+        "Eurostat country alias"
+      ],
       "license": "natural-earth-public-domain",
       "shapes": 68,
       "sha256": "70cd83aa4832c9d195108cc4e2990f128052e24acb4967cb7c6691b695401d09",
@@ -175,7 +211,11 @@
       "level": "country-or-territory",
       "classification": "Natural Earth Admin 0 Map Units",
       "vintage": "5.1.1",
-      "identifiers": ["ISO 3166-1 alpha-2", "ISO 3166-1 alpha-3", "Eurostat country alias"],
+      "identifiers": [
+        "ISO 3166-1 alpha-2",
+        "ISO 3166-1 alpha-3",
+        "Eurostat country alias"
+      ],
       "license": "natural-earth-public-domain",
       "shapes": 247,
       "sha256": "68b225b731701c87d9b6a1db334760ed89de092f1b8b87649bedb51ae8046132",
@@ -189,10 +229,84 @@
       "classification": "NUTS 2024",
       "classification_field": "classification",
       "vintage": "2024",
-      "identifiers": ["NUTS 3 2024", "ISTAT province 2024"],
+      "identifiers": [
+        "NUTS 3 2024",
+        "ISTAT province 2024"
+      ],
       "license": "istat-cc-by-4.0",
       "shapes": 107,
       "sha256": "60b5f946837c0c6584651dc85bd171ed64e77760f7153c13e912ec200799f269"
+    },
+    {
+      "id": "france-regions-2026",
+      "file": "france-regions.geo.json",
+      "scope": "Metropolitan France and DROM",
+      "level": "region",
+      "classification": "INSEE Code officiel géographique 2026",
+      "classification_field": null,
+      "vintage": "2026-01-01",
+      "identifiers": [
+        "INSEE COG region"
+      ],
+      "license": "ign-insee-open-licence",
+      "shapes": 18,
+      "sha256": "30df0e50bd88a700599c7e1bb71a4f8f3b0937da108b78aa31ed1a9ce9600811"
+    },
+    {
+      "id": "france-departments-2026",
+      "file": "france-departments.geo.json",
+      "scope": "Metropolitan France and DROM",
+      "level": "department",
+      "classification": "INSEE Code officiel géographique 2026",
+      "classification_field": null,
+      "vintage": "2026-01-01",
+      "identifiers": [
+        "INSEE COG department"
+      ],
+      "license": "ign-insee-open-licence",
+      "shapes": 101,
+      "sha256": "9460ed36958ad774386b4153dd31b00ae304173142fe84a0dfb4ee1134a4dd6f"
+    },
+    {
+      "id": "france-municipalities-2026",
+      "file": "france-municipalities.geo.json",
+      "scope": "Metropolitan France and DROM",
+      "level": "municipality",
+      "classification": "INSEE Code officiel géographique 2026",
+      "classification_field": null,
+      "vintage": "2026-01-01",
+      "identifiers": [
+        "INSEE COG municipality"
+      ],
+      "license": "ign-insee-open-licence",
+      "shapes": 34875,
+      "sha256": "d82ba54f6a8651a2004eb83b1306ffba6d1a7f45765c4283c1e197a840e1121d"
     }
-  ]
+  ],
+  "publication": {
+    "readme": "HUGGING_FACE_README.md",
+    "documents": [
+      "LICENSE",
+      "NATURAL-EARTH.md",
+      "GISCO-NUTS.md",
+      "SHA256SUMS",
+      "boundary-sets.json",
+      "natural-earth.build.json",
+      "nuts.build.json",
+      "istat-nuts.build.json",
+      "france.build.json",
+      "docs/france-coverage.md"
+    ],
+    "previews": [
+      "preview/europe-nuts1.png",
+      "preview/europe-nuts2.png",
+      "preview/europe-nuts3.png",
+      "preview/europe.png",
+      "preview/italy-macro-areas.png",
+      "preview/italy-municipalities.png",
+      "preview/italy-provinces.png",
+      "preview/italy-regions.png",
+      "preview/world.png"
+    ]
+  }
 }

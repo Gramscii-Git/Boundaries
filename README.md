@@ -1,12 +1,12 @@
 # Boundaries
 
-Ready-to-draw administrative and statistical boundaries for Italy and
+Ready-to-draw administrative and statistical boundaries for Italy, France and
 for Europe, as SVG paths in plain JSON. Every shape carries the
 identifiers statistical providers use for that place. Tables keyed by
 matching ISTAT, NUTS, licence-plate or ISO codes can be joined directly
 after checking their territorial level and classification vintage.
 
-Twelve files, 33,852 shapes, 9.6 MB in total. No runtime, no dependencies:
+Sixteen files, 68,953 shapes, 30.4 MB in total. No runtime, no dependencies:
 a file is a JSON document a browser can draw with one `<svg>` element.
 
 | File | Shapes | Level | Identifiers on each shape | Source | Licence |
@@ -19,6 +19,9 @@ a file is a JSON document a browser can draw with one `<svg>` element.
 | `italy-municipalities-2018.geo.json` | 7,954 | Municipalities active at the end of 2018 | ISTAT municipality code | ISTAT SITUAS inventory; 2018 and 2019 boundary releases | CC BY 4.0 |
 | `italy-municipalities-2019.geo.json` | 7,914 | Municipalities active at the end of 2019 | ISTAT municipality code | ISTAT SITUAS inventory; 2019 and 2020 boundary releases | CC BY 4.0 |
 | `italy-municipalities-2021.geo.json` | 7,904 | Municipalities active at the end of 2021 | ISTAT municipality code | ISTAT SITUAS inventory; 31 December 2021 boundaries | CC BY 4.0 |
+| `france-regions.geo.json` | 18 | French regions, metropolitan and DROM | INSEE region code | IGN and INSEE, 1 January 2026 | Licence Ouverte 2.0 |
+| `france-departments.geo.json` | 101 | French departments, metropolitan and DROM | INSEE department code, native parent region | IGN and INSEE, 1 January 2026 | Licence Ouverte 2.0 |
+| `france-municipalities.geo.json` | 34,875 | French municipalities, metropolitan and DROM | INSEE municipality code, native parent department and region | IGN and INSEE, 1 January 2026 | Licence Ouverte 2.0 |
 | `europe-nuts1.geo.json` | 111 | NUTS 1 regions of Europe | NUTS 2024 code (`DE2`) | Eurostat GISCO, NUTS 2024 | Non-commercial, © EuroGeographics |
 | `europe-nuts2.geo.json` | 291 | NUTS 2 regions of Europe | NUTS 2024 code (`ES51`) | Eurostat GISCO, NUTS 2024 | Non-commercial, © EuroGeographics |
 | `europe-nuts3.geo.json` | 1,330 | NUTS 3 regions of Europe | NUTS 2024 code (`FR101`) | Eurostat GISCO, NUTS 2024 | Non-commercial, © EuroGeographics |
@@ -75,6 +78,9 @@ Each file is one JSON object:
   regions the file does not draw because they lie outside its frame
   (the Canaries, Madeira, the Azores, the French overseas regions,
   Svalbard).
+- The French files share one view box with a metropolitan panel and five DROM
+  panels at independent scales. Each shape carries its `frame` and native
+  `parents`; all admitted municipalities, departments and regions are drawn.
 
 To draw a file:
 
@@ -94,7 +100,7 @@ numeric observations:
 | --- | --- | --- |
 | **This repository** | the shapes, each with its ISTAT, NUTS and ISO identifiers | drawing a table of numbers on a map |
 | [**Gramscii-IT/european-open-data-catalogue**](https://huggingface.co/datasets/Gramscii-IT/european-open-data-catalogue) on Hugging Face | discovery metadata from statistical, Italian public-finance and municipal providers; release counts and coverage belong to the snapshot manifest and quality report | finding datasets and inspecting their recorded structures, codes and documentation |
-| [**Gramscii-IT/european-territory-boundaries**](https://huggingface.co/datasets/Gramscii-IT/european-territory-boundaries) on Hugging Face | the same versioned geometry assets and machine-readable boundary-set manifest | downloading map boundaries on their own |
+| [**Gramscii-IT/european-territory-boundaries**](https://huggingface.co/datasets/Gramscii-IT/european-territory-boundaries) on Hugging Face | published snapshots of the geometry assets and their boundary-set manifest; a snapshot can lag this source checkout | downloading map boundaries on their own |
 | [**Gramscii-Git/open-data-catalogue**](https://github.com/Gramscii-Git/open-data-catalogue) on GitHub | catalogue release policy, validation and publication code | validating an export from Gramscii's harvester and publishing a verified immutable revision |
 
 A dataset in the catalogue is cut by a territorial dimension whose codes
@@ -199,6 +205,23 @@ in the file's `source_invalid_geometry_codes`, and in its visible attribution.
 Unexpected invalid polygons fail the build against the pinned quality inventory.
 This SVG asset is for display and is not a GIS polygon validity certification.
 
+### France
+
+The three French files cover all 18 regions, 101 departments and 34,875
+municipalities in metropolitan France and the five DROM on 1 January 2026.
+IGN's official ADMIN EXPRESS COG CARTO PE 4.0 geometry matches the independent
+INSEE COG inventory and its parent assignments. Codes remain native INSEE
+identifiers; they do not claim a NUTS crosswalk. All source polygons are valid.
+Separate DROM panels preserve complete drawing coverage at independent scales.
+
+[`france.build.json`](france.build.json) pins the two official inputs, extracted
+GeoPackage, identity filters, counts, rights and renderer panels. The generator
+also produces complete GeoParquet polygons in OGC:CRS84 locally.
+[The coverage report](docs/france-coverage.md) documents exclusions, reproduction
+and commercial reuse under Licence Ouverte 2.0. Other French overseas
+collectivities remain outside the declared scope. No Hugging Face upload is
+part of generation or verification.
+
 ### Historical municipalities
 
 [`municipalities.build.json`](municipalities.build.json) pins every input URL,
@@ -250,7 +273,7 @@ The source contains 115, 299 and 1,345 regional units at levels 1, 2 and 3.
 The EU subset is NUTS 2024: 92, 244 and 1,165 units. Non-EU units are
 Eurostat statistical regions, not EU NUTS. Each exported shape records this
 distinction. These statistical levels do not represent every country's native
-administrative hierarchy. This repository contains Italian municipalities;
+administrative hierarchy. This repository contains Italian and qualified French municipalities;
 it does not contain a European municipality boundary set.
 
 1. One frame is fixed around the continent, from the Atlantic coast of
@@ -369,6 +392,9 @@ repository, not the upstream archives.
 | `italy-municipalities-2018.geo.json` | `90ede3e5e6533edc5d58a8bf868f3654ee66607b6f8ff0b03a2030b19e73ff30` |
 | `italy-municipalities-2019.geo.json` | `4a6ee6c0675da5a736426f217665fa9f85f2e8c8a7f1c0b37b2186f80d518bd6` |
 | `italy-municipalities-2021.geo.json` | `030f54e34fcf7b583a9863b46bfd1601c072499be24db1e7f9becb2daf093366` |
+| `france-regions.geo.json` | `30df0e50bd88a700599c7e1bb71a4f8f3b0937da108b78aa31ed1a9ce9600811` |
+| `france-departments.geo.json` | `9460ed36958ad774386b4153dd31b00ae304173142fe84a0dfb4ee1134a4dd6f` |
+| `france-municipalities.geo.json` | `d82ba54f6a8651a2004eb83b1306ffba6d1a7f45765c4283c1e197a840e1121d` |
 | `europe-nuts1.geo.json` | `dae9c4d6c4341679f3942b6d2561c5b43a2aeab0bf31e3bd68e53d5f01a21a32` |
 | `europe-nuts2.geo.json` | `a823239c7af6f3c764246e186ddca6dd6302a65791c602926bd0871bb64c932c` |
 | `europe-nuts3.geo.json` | `50b916560f82825922b4108f02f15dc6485458fd091234e10be31e311769a818` |
@@ -403,6 +429,13 @@ them for any purpose, including commercially, with this attribution:
 ISTAT's open-data terms: <https://www.istat.it/dati/open-data/>.
 For historical files, use the attribution in their own `source` field, which
 identifies the SITUAS inventory date and the boundary releases used.
+
+**French files** (`france-regions`, `france-departments`, `france-municipalities`)
+use official IGN and INSEE sources under
+[Licence Ouverte 2.0](https://www.data.gouv.fr/pages/legal/licences/etalab-2.0).
+Commercial reuse is permitted with the exact source attribution and dated
+release information in each asset. [The source and coverage report](docs/france-coverage.md)
+identifies the generalised geometry, registry scope and independent panel scales.
 
 **Eurostat GISCO files** (`europe-nuts1`, `europe-nuts2`, `europe-nuts3`)
 are adapted from data Eurostat distributes under its own
