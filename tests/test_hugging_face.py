@@ -1,15 +1,15 @@
 """Hugging Face publication contains every verified boundary exactly once."""
 
-import gzip
 import json
 import tempfile
 import unittest
 from pathlib import Path
 
+import pyarrow as pa
+import pyarrow.parquet as pq
 from datasets import load_dataset
-from datasets.info import DatasetInfosDict
-from huggingface_hub import DatasetCard
 from pydantic import ValidationError
+from shapely.geometry import Polygon
 
 from scripts.hugging_face import Publication, build, validate_rows
 
@@ -31,19 +31,24 @@ class HuggingFaceTests(unittest.TestCase):
             release = build(root, Path(first))
             repeated = build(root, Path(second))
             self.assertEqual(release, repeated)
-            infos = DatasetInfosDict.from_dataset_card_data(
-                DatasetCard.load(str(Path(first) / "README.md")).data,
-            )
-            self.assertEqual(
-                set(infos), set(release["data_files"]),
-            )
             italian = load_dataset(
-                "json", data_files=str(Path(first) / release["data_files"]["istat"]["file"]),
-                split="train", features=infos["istat"].features, cache_dir=second,
+                first, name="istat", split="train", cache_dir=second,
             )
             nuts = italian.filter(lambda row: row["boundary_set_id"] == "italy-nuts3-2024")
             self.assertEqual(set(nuts["vintage"]), {"2024"})
             self.assertTrue(all(row["parent_codes"] is None for row in nuts))
+            census = Path(first) / "census-sections-2021"
+            census.mkdir()
+            geometry = Polygon([(8, 45), (8.1, 45), (8, 45.1)]).wkb
+            pq.write_table(
+                pa.table({"section_id": ["000000001"], "geometry": [geometry]}),
+                census / "R01.parquet",
+            )
+            sections = load_dataset(
+                first, name="istat-census-sections-2021", split="train", cache_dir=second,
+            )
+            self.assertEqual(sections[0]["section_id"], "000000001")
+            self.assertEqual(sections[0]["geometry"], geometry)
             self.assertEqual(
                 {path.name for path in (Path(first) / "preview").glob("*.png")},
                 {Path(name).name for name in publication.previews},
@@ -67,8 +72,8 @@ class HuggingFaceTests(unittest.TestCase):
                 for license_ in manifest["licenses"].values()
             }
             for group, metadata in release["data_files"].items():
-                with gzip.open(Path(first) / metadata["file"], "rt", encoding="utf-8") as source:
-                    rows = [json.loads(line) for line in source]
+                self.assertEqual(Path(metadata["file"]).suffix, ".parquet")
+                rows = pq.read_table(Path(first) / metadata["file"]).to_pylist()
                 self.assertEqual(len(rows), metadata["rows"])
                 self.assertEqual(
                     {row["commercial_use"] for row in rows},
@@ -98,7 +103,8 @@ class HuggingFaceTests(unittest.TestCase):
                 )
 
     def test_publication_configuration_requires_explicit_safe_paths(self):
-        good={'readme':'HUGGING_FACE_README.md','documents':['LICENSE'],'previews':[]}
+        good={'readme':'HUGGING_FACE_README.md','documents':['LICENSE'],
+              'previews':[],'table_compression':'zstd'}
         for field in Publication.model_fields:
             with self.subTest(field=field), self.assertRaises(ValidationError):
                 Publication.model_validate({name:value for name,value in good.items() if name!=field})
@@ -112,7 +118,7 @@ class HuggingFaceTests(unittest.TestCase):
             (output / "README.md").write_text("---\nlicense: other\n---\n# Boundaries\n")
             with self.assertRaisesRegex(ValueError, "column schema is missing: istat"):
                 validate_rows(output, {"data_files": {
-                    "istat": {"file": "data/istat.jsonl.gz", "rows": 1},
+                    "istat": {"file": "data/istat.parquet", "rows": 1},
                 }})
 
 

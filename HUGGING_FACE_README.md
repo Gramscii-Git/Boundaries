@@ -12,19 +12,19 @@ configs:
 - config_name: istat
   data_files:
   - split: train
-    path: data/istat.jsonl.gz
+    path: data/istat.parquet
 - config_name: natural-earth
   data_files:
   - split: train
-    path: data/natural-earth.jsonl.gz
+    path: data/natural-earth.parquet
 - config_name: ign-insee
   data_files:
   - split: train
-    path: data/ign-insee.jsonl.gz
+    path: data/ign-insee.parquet
 - config_name: gisco-nuts-non-commercial
   data_files:
   - split: train
-    path: data/gisco-nuts-non-commercial.jsonl.gz
+    path: data/gisco-nuts-non-commercial.parquet
 - config_name: istat-census-sections-2021
   data_files:
   - split: train
@@ -102,8 +102,9 @@ shapes. Every shape has provider-facing identifiers and an SVG path in the
 declared view box.
 
 The raw `*.geo.json` files are the canonical renderer assets. The four compressed
-JSONL files expose the same shapes as rows for the Hugging Face dataset viewer.
-The card declares their column types explicitly. Vintages and reference dates
+Parquet tables expose the same shapes as rows for the Hugging Face dataset viewer.
+All viewer configurations, including census sections, use Parquet. The card
+declares the boundary column types explicitly. Vintages and reference dates
 remain source strings, including year-only values; native identifiers retain
 leading zeroes. Missing optional source fields remain null.
 `boundary-sets.json` records each set's territorial level, classification,
